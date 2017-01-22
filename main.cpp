@@ -73,7 +73,7 @@ void initSdl() {
         exit(EXIT_FAILURE);
         
     }
-
+    
     window = SDL_CreateWindow("Test",
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               screenWidth,screenHeight,0);
@@ -98,7 +98,7 @@ void initSdl() {
 void setup() {
     srand(time(nullptr));
     initSdl();
-   
+    
     running = true;
     
     //initialize snake with random head and give it direction
@@ -118,8 +118,40 @@ void handleInput () {
             running = false;
             
             break;
-        default:
-            break;
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.sym) {
+            case SDLK_DOWN:
+            case SDLK_s:
+                if(!snakeBody[head].direction.y) { 
+                    snakeBody[head].direction.y = 1;                
+                    snakeBody[head].direction.x = 0;                
+                    
+                }
+                break;
+            case SDLK_UP:
+            case SDLK_w:
+                if(!snakeBody[head].direction.y) {
+                    snakeBody[head].direction.y = -1;
+                    snakeBody[head].direction.x = 0; 
+                }
+                break;
+            case SDLK_RIGHT:
+            case SDLK_d:
+                if(!snakeBody[head].direction.x) {
+                    snakeBody[head].direction.x = 1;
+                    snakeBody[head].direction.y = 0;
+                    
+                }
+                break;
+            case SDLK_LEFT:
+            case SDLK_a:
+                if(!snakeBody[head].direction.x) {
+                    snakeBody[head].direction.x = -1;
+                    snakeBody[head].direction.y = 0;
+                }
+                break;
+            }
+            
         }
     }
     
@@ -143,7 +175,7 @@ void logic() {
         
         
     }
-
+    
 }
 
 void draw() {
@@ -202,7 +234,7 @@ int main(int argc, char *argv[])
         if(tempFrames * frameTime >= snakeSpeed) {
             tempFrames = 0;
             logic();
-                       
+            
         }
         draw();
         
