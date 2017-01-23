@@ -49,8 +49,7 @@ void setup() {
     
     //initialize snake with random head and give it direction
     snake::position = getRandomTile();
-    snake::direction.x = 1;
-    snake::direction.y = 0;    
+    snake::turn = snake::TurnDirection::Right;
     //set initial snake speed to 1 second
     snake::timeToMove = 1000;
     
@@ -68,35 +67,26 @@ void handleInput () {
             switch (event.key.keysym.sym) {
             case SDLK_DOWN:
             case SDLK_s:
-                if(!snake::direction.y) { 
-                    snake::direction.y = 1;                
-                    snake::direction.x = 0;                
-                    
-                }
+                snake::turn = snake::TurnDirection::Down;
                 break;
             case SDLK_UP:
             case SDLK_w:
-                if(!snake::direction.y) {
-                    snake::direction.y = -1;
-                    snake::direction.x = 0; 
-                }
+                snake::turn = snake::TurnDirection::Up;
                 break;
             case SDLK_RIGHT:
             case SDLK_d:
-                if(!snake::direction.x) {
-                    snake::direction.x = 1;
-                    snake::direction.y = 0;
-                    
-                }
+                snake::turn = snake::TurnDirection::Right;
                 break;
             case SDLK_LEFT:
+                snake::turn = snake::TurnDirection::Left;
+                
             case SDLK_a:
-                if(!snake::direction.x) {
-                    snake::direction.x = -1;
-                    snake::direction.y = 0;
-                }
+                break;
+            case SDLK_SPACE:
+                snake::eat = true;
                 break;
             }
+            
             
         }
     }
@@ -104,9 +94,45 @@ void handleInput () {
 }
 
 void logic() {
-    //move the snake body
-    snake::position.x += snake::direction.x;
-    snake::position.y += snake::direction.y;
+    switch (snake::turn) {
+    case snake::TurnDirection::Down:
+        if(!snake::direction.y) { 
+            snake::direction.y = 1;                
+            snake::direction.x = 0;                
+            
+        }        
+        break;
+    case snake::TurnDirection::Up:
+        if(!snake::direction.y) {
+            snake::direction.y = -1;
+            snake::direction.x = 0; 
+        }
+        break;
+    case snake::TurnDirection::Right:
+        if(!snake::direction.x) {
+            snake::direction.x = 1;
+            snake::direction.y = 0;
+            
+        }
+        break;
+    case snake::TurnDirection::Left:
+        if(!snake::direction.x) {
+            snake::direction.x = -1;
+            snake::direction.y = 0;
+        }
+        break;
+        
+    }
+    
+    
+    if(snake::eat)
+    {
+        snake::grow();
+        snake::eat = false;
+    } else {
+        snake::update();
+    }
+    
     
     //wrap the snake position to other side
     if(snake::position.x < 0){
@@ -127,23 +153,8 @@ void draw() {
     SDL_SetRenderDrawColor(renderer,10,10,10,255);
     SDL_RenderClear(renderer);
     
-    SDL_SetRenderDrawColor(renderer,250,250,250,255);
-    SDL_Point drawnPiecePos;
-    SDL_Rect drawnPieceRect;
-    //draw head
-    drawnPiecePos = screenCoordinate(snake::position);
-    drawnPieceRect.x = drawnPiecePos.x;
-    drawnPieceRect.y = drawnPiecePos.y;
-    drawnPieceRect.h = drawnPieceRect.w = snake::pieceSize -1;
     
-//    for(int i = 0 ; i < snakeBody.size(); i++) {
-//        drawnPiecePos = screenCoordinates(snakeBody[i].x,snakeBody[i].y);
-//        drawnPieceRect.x = drawnPiecePos.x;
-//        drawnPieceRect.y = drawnPiecePos.y;
-//        drawnPieceRect.h = drawnPieceRect.w = pieceSize -1;
-//        SDL_RenderDrawRect(renderer,&drawnPieceRect);
-//    }
-    SDL_RenderDrawRect(renderer,&drawnPieceRect);
+    snake::drawSnake();
     
     SDL_RenderPresent(renderer);
     

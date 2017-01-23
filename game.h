@@ -15,6 +15,7 @@ const int screenWidth = numTilesInWidth * snake::pieceSize;
 const int screenHeight = numTilesInHeight * snake::pieceSize;
 //----------------
 
+
 void initSdl();
 void setup();
 void handleInput();

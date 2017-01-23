@@ -25,9 +25,7 @@ int main(int argc, char *argv[])
             moveSnake = false;
            
         }
-        
-        
-        
+          
         game::draw();
         
         gameHandlingTime = SDL_GetTicks() - loopStart;
