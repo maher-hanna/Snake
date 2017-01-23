@@ -10,24 +10,35 @@ int main(int argc, char *argv[])
 {
     
     game::setup();
-    Uint32 tempFrames = 0; 
+    
+    Uint32 totalTime = 0;
+    bool moveSnake = false;
     
     while(game::running) {
-        Uint32 loopTime = SDL_GetTicks();
-        tempFrames++;
+        Uint32 gameHandlingTime = 0;
+        Uint32 loopStart = SDL_GetTicks();
+        
         game::handleInput();
         
-        //move snake only if time ellapsed equals snake speed
-        if(tempFrames * game::frameTime >= snake::timeToMove) {
-            tempFrames = 0;
+        if(moveSnake) {
             game::logic();
-            
+            moveSnake = false;
+           
         }
+        
+        
+        
         game::draw();
         
-        loopTime = SDL_GetTicks() - loopTime;
-        if(loopTime < game::frameTime) {
-            SDL_Delay(game::frameTime - loopTime);
+        gameHandlingTime = SDL_GetTicks() - loopStart;
+        if(gameHandlingTime < game::frameTime) {
+            SDL_Delay(game::frameTime - gameHandlingTime);
+        }
+        //total time = game handling time + delay
+        totalTime += SDL_GetTicks() - loopStart;
+        if(totalTime >= snake::timeToMove) {
+            moveSnake = true;
+            totalTime = 0;
         }
         
     }
