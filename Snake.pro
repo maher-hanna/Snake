@@ -3,7 +3,15 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp
+SOURCES += \
+    game.cpp \
+    main.cpp \
+    snake.cpp
+
+HEADERS += \
+    snake.h \
+    game.h
+
 
 win32 {
 
@@ -22,3 +30,8 @@ win32 {
 
     }
 }
+unix {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += sdl2
+}
+
