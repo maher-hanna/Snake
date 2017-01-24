@@ -79,7 +79,6 @@ void handleInput () {
                 break;
             case SDLK_LEFT:
                 snake::turn = snake::TurnDirection::Left;
-                
             case SDLK_a:
                 break;
             case SDLK_SPACE:
