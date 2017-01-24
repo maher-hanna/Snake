@@ -28,11 +28,12 @@ const int pieceSize = 20;
 extern Uint32 timeToMove;
 
 //functions --------
-void drawPiece(SDL_Point tilePos,SDL_Color color);
+void setDirection(TurnDirection dir);
 void drawTale();
 void drawSnake();
 void grow();
 void update();
+bool checkSelfCollision();
 //---------
 
 }

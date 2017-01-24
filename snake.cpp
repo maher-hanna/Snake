@@ -15,37 +15,24 @@ TurnDirection turn = TurnDirection::Right;
 Uint32 timeToMove;
 
 
-void drawPiece(SDL_Point tilePos, SDL_Color color) {
-    SDL_SetRenderDrawColor(game::renderer,
-                           color.r,color.g,color.b,color.a);
-    SDL_Point drawnPiecePos;
-    SDL_Rect drawnPieceRect;
-    //draw head
-    drawnPiecePos = game::screenCoordinate(tilePos);
-    drawnPieceRect.x = drawnPiecePos.x;
-    drawnPieceRect.y = drawnPiecePos.y;
-    drawnPieceRect.h = drawnPieceRect.w = snake::pieceSize -1;
-    SDL_RenderFillRect(game::renderer,&drawnPieceRect);
-    
-}
-
 
 void drawTale() {
     for(int i = 0 ; i < tale.size();i++) {
-        drawPiece(tale[i],SDL_Color{150,150,150,255});
+        game::drawPiece(tale[i],SDL_Color{150,150,150,255});
         
     }
 }
 
 void drawSnake() {
     //draw head
-    drawPiece(position,SDL_Color{250,250,250,255});
+    game::drawPiece(position,SDL_Color{250,250,250,255});
     
     drawTale();
 }
 
 void grow() {
     tale.push_back({position.x,position.y});
+    game::setGridCell(position,true);
     position.x += direction.x;
     position.y += direction.y;
 }
@@ -55,17 +42,55 @@ void update() {
     
     //update tale
     if(size) {
+        //update grid block behind the tale
+        game::stateGrid[tale[0].y][tale[0].x] = 0;
+        
         for(int i = 0 ; i < tale.size() - 1; i++) {
             tale[i] = tale[i + 1];
         }
         tale.back().x = position.x;
         tale.back().y = position.y;
+        game::stateGrid[tale.back().y][tale.back().x] = 1;
+        
     }
+    
     
     //update head
     position.x += direction.x;
     position.y += direction.y;
+    
 }
 
+void setDirection(TurnDirection dir) {
+    switch (dir) {
+    case TurnDirection::Right:
+        direction.x = 1;
+        direction.y = 0;        
+        break;
+    case TurnDirection::Down:
+        direction.x = 0;
+        direction.y = 1;        
+        break;
+    case TurnDirection::Left:
+        direction.x = -1;
+        direction.y = 0;        
+        break;
+    case TurnDirection::Up:
+        direction.x = 0;
+        direction.y = -1;        
+        break;
+        
+    default:
+        break;
+    }
+}
 
+bool checkSelfCollision() {
+    if(game::stateGrid[position.y][position.x] == 1) {
+        return true;
+    } else {
+        return false;
+    }
+    
+}
 }

@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include <algorithm>
 #include <ctime>
 
 namespace game {
@@ -9,7 +10,11 @@ namespace game {
 //variables definition ------------
 SDL_Window * window;
 SDL_Renderer * renderer;
+SDL_Point target;
 bool running;
+std::vector<int> emptyTiles;
+int stateGrid[numTilesInHeight][numTilesInWidth] = {};
+
 // -------------
 
 
@@ -44,15 +49,7 @@ void initSdl() {
 void setup() {
     srand(time(nullptr));
     initSdl();
-    
-    running = true;
-    
-    //initialize snake with random head and give it direction
-    snake::position = getRandomTile();
-    snake::turn = snake::TurnDirection::Right;
-    //set initial snake speed to 1 second
-    snake::timeToMove = 1000;
-    
+    start();    
 }
 
 void handleInput () {
@@ -96,28 +93,24 @@ void logic() {
     switch (snake::turn) {
     case snake::TurnDirection::Down:
         if(!snake::direction.y) { 
-            snake::direction.y = 1;                
-            snake::direction.x = 0;                
+            snake::setDirection(snake::TurnDirection::Down);
             
         }        
         break;
     case snake::TurnDirection::Up:
         if(!snake::direction.y) {
-            snake::direction.y = -1;
-            snake::direction.x = 0; 
+            snake::setDirection(snake::TurnDirection::Up);
         }
         break;
     case snake::TurnDirection::Right:
         if(!snake::direction.x) {
-            snake::direction.x = 1;
-            snake::direction.y = 0;
+            snake::setDirection(snake::TurnDirection::Right);
             
         }
         break;
     case snake::TurnDirection::Left:
         if(!snake::direction.x) {
-            snake::direction.x = -1;
-            snake::direction.y = 0;
+            snake::setDirection(snake::TurnDirection::Left);
         }
         break;
         
@@ -130,6 +123,11 @@ void logic() {
         snake::eat = false;
     } else {
         snake::update();
+    }
+    
+    if(snake::checkSelfCollision()) {
+        game::running = false;
+        
     }
     
     
@@ -154,6 +152,7 @@ void draw() {
     
     
     snake::drawSnake();
+    game::drawTarget();
     
     SDL_RenderPresent(renderer);
     
@@ -175,10 +174,99 @@ SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
 }
 
 
-SDL_Point getRandomTile() {
-    return SDL_Point{rand() % numTilesInWidth, rand() % numTilesInHeight};
+
+void start() {
+    running = true;
+    
+    //initialize snake with random head and give it direction
+    snake::position.x = 10;
+    snake::position.y = 10;
+    snake::setDirection(snake::TurnDirection::Right);
+    game::initGrid();
+    game::target = game::createTarget();
+    snake::grow();
+    snake::grow();
+    
+    //set initial snake speed to 1 second
+    snake::timeToMove = 1000;
+    
+    
+}
+void stop() {
+    
+}
+
+//make every grid block that contains a snake piece eqauls 1 
+void initGrid() {
+    setGridCell(snake::position,true);
+    for(int i = 0 ; i < snake::tale.size(); i++) {
+        setGridCell(snake::tale[i],true);
+    }
+    //add empty cells to emptyTiles    
+    bool empty = true;
+    for(int y = 0 ; y < numTilesInWidth;y++) {
+        for(int x = 0 ; x < numTilesInHeight; x++) {
+            bool empty = true;
+            
+            for(int i = 0 ; i < snake::tale.size();i++) {
+                if(game::getGridCell(snake::tale[i]) == true) {
+                    empty = false;
+                }
+            }
+            if(game::getGridCell(snake::position) == true) {
+                empty = false;
+            }
+            if(empty) {
+                game::emptyTiles.push_back(x + y * numTilesInWidth);
+                empty = true;
+            }
+            
+        }
+        
+    }
+    
+}
+
+SDL_Point createTarget() {
+    SDL_Point target;
+    int index = rand() % (numTilesInHeight * numTilesInHeight);
+    target.x = index % numTilesInWidth;
+    target.y = index / numTilesInHeight;
+    return target;
+    
+    
+}
+void setGridCell(const SDL_Point &cell, bool filled) {
+    stateGrid[cell.y][cell.x] = int(filled);
+    int index = cell.x + cell.y * numTilesInWidth;
+    auto i = std::find(emptyTiles.begin(),emptyTiles.end(),index);
+    if(i != emptyTiles.end()) {
+        emptyTiles.erase(i);
+    }
+    
+}
+bool getGridCell(const SDL_Point & cell) {
+    return stateGrid[cell.y][cell.x];
+    
+}
+void drawPiece(SDL_Point tilePos, SDL_Color color) {
+    SDL_SetRenderDrawColor(game::renderer,
+                           color.r,color.g,color.b,color.a);
+    SDL_Point drawnPiecePos;
+    SDL_Rect drawnPieceRect;
+    //draw head
+    drawnPiecePos = game::screenCoordinate(tilePos);
+    drawnPieceRect.x = drawnPiecePos.x;
+    drawnPieceRect.y = drawnPiecePos.y;
+    drawnPieceRect.h = drawnPieceRect.w = snake::pieceSize -1;
+    SDL_RenderFillRect(game::renderer,&drawnPieceRect);
     
 }
 
 
+void drawTarget() {
+    drawPiece(target,SDL_Color{255,105,180});
+    
+    
+}
 }
