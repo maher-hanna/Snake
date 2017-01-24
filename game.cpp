@@ -229,7 +229,8 @@ void initGrid() {
 
 SDL_Point createTarget() {
     SDL_Point target;
-    int index = rand() % (numTilesInHeight * numTilesInHeight);
+    int random = rand() % (emptyTiles.size());
+    int index = emptyTiles[random];
     target.x = index % numTilesInWidth;
     target.y = index / numTilesInHeight;
     return target;
