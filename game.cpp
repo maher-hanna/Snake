@@ -121,6 +121,7 @@ void logic() {
     {
         snake::grow();
         snake::eat = false;
+        game::createTarget();
     } else {
         snake::update();
     }
@@ -188,7 +189,7 @@ void start() {
     snake::grow();
     
     //set initial snake speed to 1 second
-    snake::timeToMove = 1000;
+    snake::timeToMove = 100;
     
     
 }
@@ -206,15 +207,9 @@ void initGrid() {
     bool empty = true;
     for(int y = 0 ; y < numTilesInWidth;y++) {
         for(int x = 0 ; x < numTilesInHeight; x++) {
-            bool empty = true;
             
-            for(int i = 0 ; i < snake::tale.size();i++) {
-                if(game::getGridCell(snake::tale[i]) == true) {
-                    empty = false;
-                }
-            }
-            if(game::getGridCell(snake::position) == true) {
-                empty = false;
+            if(game::getGridCell(SDL_Point{x,y}) == true) {
+                game::emptyTiles.push_back(x + y * numTilesInWidth);
             }
             if(empty) {
                 game::emptyTiles.push_back(x + y * numTilesInWidth);
