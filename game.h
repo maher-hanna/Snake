@@ -22,7 +22,6 @@ void setup();
 void handleInput();
 void logic();
 void draw();
-void stop();
 void clean();
 void drawPiece(SDL_Point tilePos,SDL_Color color);
 
@@ -32,6 +31,8 @@ void drawTarget();
 SDL_Point screenCoordinate(SDL_Point tileCordinate);
 void initGrid();
 SDL_Point createTarget();
+int toIndex(const SDL_Point &tile,int width);
+SDL_Point toPoint(int index,int width);
 void setGridCell(const SDL_Point &cell, bool filled);
 bool getGridCell(const SDL_Point &cell);
 
@@ -45,6 +46,7 @@ extern SDL_Window * window;
 extern SDL_Renderer * renderer;
 extern SDL_Point target;
 extern bool running;
+extern int score;
 //emptyTiles is used for avoiding putting the target on 
 //a tile that is occupied by the snake
 extern std::vector<int> emptyTiles;

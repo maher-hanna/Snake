@@ -43,14 +43,15 @@ void update() {
     //update tale
     if(size) {
         //update grid block behind the tale
-        game::stateGrid[tale[0].y][tale[0].x] = 0;
-        
+        game::setGridCell(tale[0],false);
+                
         for(int i = 0 ; i < tale.size() - 1; i++) {
             tale[i] = tale[i + 1];
         }
         tale.back().x = position.x;
         tale.back().y = position.y;
-        game::stateGrid[tale.back().y][tale.back().x] = 1;
+        game::setGridCell(tale.back(),true);
+        
         
     }
     

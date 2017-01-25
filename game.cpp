@@ -12,6 +12,7 @@ SDL_Window * window;
 SDL_Renderer * renderer;
 SDL_Point target;
 bool running;
+int score;
 std::vector<int> emptyTiles;
 int stateGrid[numTilesInHeight][numTilesInWidth] = {};
 
@@ -116,14 +117,13 @@ void logic() {
         
     }
     
+    snake::update();
     
-    if(snake::eat)
-    {
+    if(snake::position.x == target.x && snake::position.y == target.y) {
+        score++;
         snake::grow();
         snake::eat = false;
         game::createTarget();
-    } else {
-        snake::update();
     }
     
     if(snake::checkSelfCollision()) {
@@ -178,47 +178,51 @@ SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
 
 void start() {
     running = true;
+    score = 0;
     
     //initialize snake with random head and give it direction
     snake::position.x = 10;
     snake::position.y = 10;
     snake::setDirection(snake::TurnDirection::Right);
+    snake::grow();
+    snake::grow();
     game::initGrid();
     game::target = game::createTarget();
-    snake::grow();
-    snake::grow();
+    
+    
     
     //set initial snake speed to 1 second
     snake::timeToMove = 100;
     
     
 }
-void stop() {
-    
-}
+
 
 //make every grid block that contains a snake piece eqauls 1 
 void initGrid() {
-    setGridCell(snake::position,true);
-    for(int i = 0 ; i < snake::tale.size(); i++) {
-        setGridCell(snake::tale[i],true);
-    }
-    //add empty cells to emptyTiles    
-    bool empty = true;
+    //add all cells to emptyTiles    
     for(int y = 0 ; y < numTilesInWidth;y++) {
         for(int x = 0 ; x < numTilesInHeight; x++) {
-            
-            if(game::getGridCell(SDL_Point{x,y}) == true) {
-                game::emptyTiles.push_back(x + y * numTilesInWidth);
-            }
-            if(empty) {
-                game::emptyTiles.push_back(x + y * numTilesInWidth);
-                empty = true;
-            }
-            
+            game::emptyTiles.push_back(x + y * numTilesInWidth);           
         }
         
     }
+    //remove snake cells from emptyTiles
+    for(int i = 0 ; i < snake::tale.size(); i++) {
+        stateGrid[snake::tale[i].y][snake::tale[i].x] = 1;
+        auto itr = find(emptyTiles.begin(),emptyTiles.end(),
+                        toIndex(snake::tale[i],numTilesInWidth));
+        if(itr != emptyTiles.end()){
+            emptyTiles.erase(itr);
+        }
+    }
+    auto itr = find(emptyTiles.begin(),emptyTiles.end(),
+                  toIndex(snake::position,numTilesInWidth));
+    if(itr != emptyTiles.end()){
+        emptyTiles.erase(itr);
+    }
+    
+    
     
 }
 
@@ -264,5 +268,12 @@ void drawTarget() {
     drawPiece(target,SDL_Color{255,105,180});
     
     
+}
+
+int toIndex(const SDL_Point &tile, int width) {
+    return tile.x + tile.y * width;
+}
+SDL_Point toPoint(int index, int width){
+    return SDL_Point{index % width,index / width};
 }
 }
