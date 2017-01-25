@@ -11,10 +11,12 @@ enum class Shape { Square , Circle };
 //---------
 
 //variables declaration-------------
+
+//position represents the snake head
 extern SDL_Point position;
+
 extern SDL_Point direction;
 extern std::vector<SDL_Point> tale;
-extern bool eat;
 extern TurnDirection turn;
 
 //--------------

@@ -1,6 +1,6 @@
 #pragma once
 #include "snake.h"
-
+#include "grid.h"
 namespace game {
 
 //timing constants ---
@@ -9,10 +9,8 @@ const int frameTime = 1000 / framesPerSecond;
 //----------------
 
 //constants ------------
-const int numTilesInWidth = 32;
-const int numTilesInHeight = 24;
-const int screenWidth = numTilesInWidth * snake::pieceSize;
-const int screenHeight = numTilesInHeight * snake::pieceSize;
+const int screenWidth = grid::width * snake::pieceSize;
+const int screenHeight = grid::height * snake::pieceSize;
 //----------------
 
 
@@ -31,10 +29,7 @@ void drawTarget();
 SDL_Point screenCoordinate(SDL_Point tileCordinate);
 void initGrid();
 SDL_Point createTarget();
-int toIndex(const SDL_Point &tile,int width);
-SDL_Point toPoint(int index,int width);
-void setGridCell(const SDL_Point &cell, bool filled);
-bool getGridCell(const SDL_Point &cell);
+SDL_Point createTarget();
 
 
 // ----------
@@ -47,11 +42,6 @@ extern SDL_Renderer * renderer;
 extern SDL_Point target;
 extern bool running;
 extern int score;
-//emptyTiles is used for avoiding putting the target on 
-//a tile that is occupied by the snake
-extern std::vector<int> emptyTiles;
-//gridState is used for snake self collision detection
-extern int stateGrid[numTilesInHeight][numTilesInWidth];
 // -------------
 
 

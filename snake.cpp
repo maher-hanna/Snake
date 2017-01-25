@@ -6,7 +6,6 @@ namespace snake {
 SDL_Point position;
 SDL_Point direction;
 std::vector<SDL_Point> tale;
-bool eat;
 TurnDirection turn = TurnDirection::Right;
 //--------------
 
@@ -32,9 +31,10 @@ void drawSnake() {
 
 void grow() {
     tale.push_back({position.x,position.y});
-    game::setGridCell(position,true);
+    grid::setTile(position,true);
     position.x += direction.x;
     position.y += direction.y;
+    grid::removeValidTarget(position);
 }
 
 void update() {
@@ -43,14 +43,14 @@ void update() {
     //update tale
     if(size) {
         //update grid block behind the tale
-        game::setGridCell(tale[0],false);
+        grid::setTile(tale[0],false);
                 
         for(int i = 0 ; i < tale.size() - 1; i++) {
             tale[i] = tale[i + 1];
         }
         tale.back().x = position.x;
         tale.back().y = position.y;
-        game::setGridCell(tale.back(),true);
+        grid::setTile(tale.back(),true);
         
         
     }
@@ -87,7 +87,7 @@ void setDirection(TurnDirection dir) {
 }
 
 bool checkSelfCollision() {
-    if(game::stateGrid[position.y][position.x] == 1) {
+    if(grid::stateGrid[position.y][position.x] == 1) {
         return true;
     } else {
         return false;

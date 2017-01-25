@@ -13,8 +13,6 @@ SDL_Renderer * renderer;
 SDL_Point target;
 bool running;
 int score;
-std::vector<int> emptyTiles;
-int stateGrid[numTilesInHeight][numTilesInWidth] = {};
 
 // -------------
 
@@ -48,7 +46,7 @@ void initSdl() {
 }
 
 void setup() {
-    srand(time(nullptr));
+    srand(unsigned(time(nullptr)));
     initSdl();
     start();    
 }
@@ -79,9 +77,7 @@ void handleInput () {
                 snake::turn = snake::TurnDirection::Left;
             case SDLK_a:
                 break;
-            case SDLK_SPACE:
-                snake::eat = true;
-                break;
+                
             }
             
             
@@ -122,8 +118,7 @@ void logic() {
     if(snake::position.x == target.x && snake::position.y == target.y) {
         score++;
         snake::grow();
-        snake::eat = false;
-        game::createTarget();
+        target = game::createTarget();
     }
     
     if(snake::checkSelfCollision()) {
@@ -134,13 +129,13 @@ void logic() {
     
     //wrap the snake position to other side
     if(snake::position.x < 0){
-        snake::position.x = numTilesInWidth - 1;
+        snake::position.x = grid::width - 1;
     }
     if(snake::position.y < 0){
-        snake::position.y = numTilesInHeight - 1;
+        snake::position.y = grid::height - 1;
     }
-    snake::position.x %= numTilesInWidth;
-    snake::position.y %= numTilesInHeight;
+    snake::position.x %= grid::width;
+    snake::position.y %= grid::height;
     
     
     
@@ -160,6 +155,10 @@ void draw() {
 }
 
 void clean() {
+    snake::tale.clear();
+    grid::possibleTarget.clear();
+    grid::clear();
+    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -184,9 +183,10 @@ void start() {
     snake::position.x = 10;
     snake::position.y = 10;
     snake::setDirection(snake::TurnDirection::Right);
-    snake::grow();
-    snake::grow();
     game::initGrid();
+    
+    snake::grow();
+    snake::grow();
     game::target = game::createTarget();
     
     
@@ -201,26 +201,15 @@ void start() {
 //make every grid block that contains a snake piece eqauls 1 
 void initGrid() {
     //add all cells to emptyTiles    
-    for(int y = 0 ; y < numTilesInWidth;y++) {
-        for(int x = 0 ; x < numTilesInHeight; x++) {
-            game::emptyTiles.push_back(x + y * numTilesInWidth);           
+    for(int y = 0 ; y < grid::height; y++) {
+        for(int x = 0 ; x < grid::width;x++) {
+            grid::possibleTarget.push_back(grid::toIndex({x,y}));           
         }
         
     }
-    //remove snake cells from emptyTiles
-    for(int i = 0 ; i < snake::tale.size(); i++) {
-        stateGrid[snake::tale[i].y][snake::tale[i].x] = 1;
-        auto itr = find(emptyTiles.begin(),emptyTiles.end(),
-                        toIndex(snake::tale[i],numTilesInWidth));
-        if(itr != emptyTiles.end()){
-            emptyTiles.erase(itr);
-        }
-    }
-    auto itr = find(emptyTiles.begin(),emptyTiles.end(),
-                  toIndex(snake::position,numTilesInWidth));
-    if(itr != emptyTiles.end()){
-        emptyTiles.erase(itr);
-    }
+    
+    //remove head from emptyTiles
+    grid::removeValidTarget(snake::position);
     
     
     
@@ -228,27 +217,14 @@ void initGrid() {
 
 SDL_Point createTarget() {
     SDL_Point target;
-    int random = rand() % (emptyTiles.size());
-    int index = emptyTiles[random];
-    target.x = index % numTilesInWidth;
-    target.y = index / numTilesInHeight;
+    int random = rand() % (grid::possibleTarget.size());
+    int index = grid::possibleTarget[random];
+    target = grid::toPoint(index);
     return target;
     
     
 }
-void setGridCell(const SDL_Point &cell, bool filled) {
-    stateGrid[cell.y][cell.x] = int(filled);
-    int index = cell.x + cell.y * numTilesInWidth;
-    auto i = std::find(emptyTiles.begin(),emptyTiles.end(),index);
-    if(i != emptyTiles.end()) {
-        emptyTiles.erase(i);
-    }
-    
-}
-bool getGridCell(const SDL_Point & cell) {
-    return stateGrid[cell.y][cell.x];
-    
-}
+
 void drawPiece(SDL_Point tilePos, SDL_Color color) {
     SDL_SetRenderDrawColor(game::renderer,
                            color.r,color.g,color.b,color.a);
@@ -270,10 +246,5 @@ void drawTarget() {
     
 }
 
-int toIndex(const SDL_Point &tile, int width) {
-    return tile.x + tile.y * width;
-}
-SDL_Point toPoint(int index, int width){
-    return SDL_Point{index % width,index / width};
-}
+
 }

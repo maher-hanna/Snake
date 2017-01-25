@@ -6,11 +6,13 @@ CONFIG -= qt
 SOURCES += \
     game.cpp \
     main.cpp \
-    snake.cpp
+    snake.cpp \
+    grid.cpp
 
 HEADERS += \
     snake.h \
-    game.h
+    game.h \
+    grid.h
 
 
 win32 {
