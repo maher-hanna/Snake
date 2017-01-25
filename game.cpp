@@ -1,8 +1,8 @@
 #include "game.h"
-
-#include <algorithm>
+#include <string>
+#include <sstream>
 #include <ctime>
-
+#include <cstdlib>
 namespace game {
 
 
@@ -117,7 +117,9 @@ void logic() {
     
     if(snake::position.x == target.x && snake::position.y == target.y) {
         score++;
+        updateScore(score);
         snake::grow();
+        snake::timeToMove -= 30;
         target = game::createTarget();
     }
     
@@ -192,7 +194,7 @@ void start() {
     
     
     //set initial snake speed to 1 second
-    snake::timeToMove = 100;
+    snake::timeToMove = 800;
     
     
 }
@@ -246,5 +248,13 @@ void drawTarget() {
     
 }
 
+void updateScore(int score){
+    std::string scoreToString;
+    std::stringstream oss;
+    oss << score;
+    scoreToString = oss.str();
+    SDL_SetWindowTitle(window,scoreToString.c_str());
+    
+}
 
 }

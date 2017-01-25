@@ -1,5 +1,5 @@
 #include "grid.h"
-
+#include <algorithm>
 namespace grid {
 
 //variable definitions -------------
