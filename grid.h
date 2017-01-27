@@ -20,10 +20,11 @@ int toIndex(const SDL_Point &tile);
 SDL_Point toPoint(int index);
 
 
-void setTile(const SDL_Point &cell, bool filled);
-bool getTile(const SDL_Point &cell);
+void setTileState(const SDL_Point &cell, bool filled);
+bool getTileState(const SDL_Point &cell);
 
 void removeValidTarget(const SDL_Point & tile);
+void addValidTarget(const SDL_Point & tile);
 void clear();
 
 }

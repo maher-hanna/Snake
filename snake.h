@@ -30,7 +30,7 @@ const int pieceSize = 20;
 extern Uint32 timeToMove;
 
 //functions --------
-void setDirection(TurnDirection dir);
+void turnDirection(TurnDirection dir);
 void drawTale();
 void drawSnake();
 void grow();

@@ -31,7 +31,7 @@ void drawSnake() {
 
 void grow() {
     tale.push_back({position.x,position.y});
-    grid::setTile(position,true);
+    grid::setTileState(position,true);
     position.x += direction.x;
     position.y += direction.y;
     grid::removeValidTarget(position);
@@ -43,14 +43,16 @@ void update() {
     //update tale
     if(size) {
         //update grid block behind the tale
-        grid::setTile(tale[0],false);
+        grid::setTileState(tale[0],false);
+        grid::addValidTarget(tale[0]);
                 
         for(int i = 0 ; i < tale.size() - 1; i++) {
             tale[i] = tale[i + 1];
         }
         tale.back().x = position.x;
         tale.back().y = position.y;
-        grid::setTile(tale.back(),true);
+        grid::setTileState(tale.back(),true);
+        grid::removeValidTarget(tale.back());
         
         
     }
@@ -60,34 +62,43 @@ void update() {
     position.x += direction.x;
     position.y += direction.y;
     
+    
 }
 
-void setDirection(TurnDirection dir) {
+void turnDirection(TurnDirection dir) {
     switch (dir) {
-    case TurnDirection::Right:
-        direction.x = 1;
-        direction.y = 0;        
+    case snake::TurnDirection::Down:
+        if(!snake::direction.y) { 
+            direction.x = 0;
+            direction.y = 1;
+            
+        }        
         break;
-    case TurnDirection::Down:
-        direction.x = 0;
-        direction.y = 1;        
+    case snake::TurnDirection::Up:
+        if(!snake::direction.y) {
+            direction.x = 0;
+            direction.y = -1;         }
         break;
-    case TurnDirection::Left:
-        direction.x = -1;
-        direction.y = 0;        
+    case snake::TurnDirection::Right:
+        if(!snake::direction.x) {
+            direction.x = 1;
+            direction.y = 0;        
+            
+        }
         break;
-    case TurnDirection::Up:
-        direction.x = 0;
-        direction.y = -1;        
+    case snake::TurnDirection::Left:
+        if(!snake::direction.x) {
+            direction.x = -1;
+            direction.y = 0;        
+        }
         break;
         
-    default:
-        break;
     }
+
 }
 
 bool checkSelfCollision() {
-    if(grid::stateGrid[position.y][position.x] == 1) {
+    if(grid::getTileState(position)) {
         return true;
     } else {
         return false;

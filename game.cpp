@@ -87,31 +87,8 @@ void handleInput () {
 }
 
 void logic() {
-    switch (snake::turn) {
-    case snake::TurnDirection::Down:
-        if(!snake::direction.y) { 
-            snake::setDirection(snake::TurnDirection::Down);
-            
-        }        
-        break;
-    case snake::TurnDirection::Up:
-        if(!snake::direction.y) {
-            snake::setDirection(snake::TurnDirection::Up);
-        }
-        break;
-    case snake::TurnDirection::Right:
-        if(!snake::direction.x) {
-            snake::setDirection(snake::TurnDirection::Right);
-            
-        }
-        break;
-    case snake::TurnDirection::Left:
-        if(!snake::direction.x) {
-            snake::setDirection(snake::TurnDirection::Left);
-        }
-        break;
-        
-    }
+    snake::turnDirection(snake::turn);
+    
     
     snake::update();
     
@@ -119,7 +96,7 @@ void logic() {
         score++;
         updateScore(score);
         snake::grow();
-        snake::timeToMove -= 30;
+        snake::timeToMove -= 10;
         target = game::createTarget();
     }
     
@@ -184,7 +161,7 @@ void start() {
     //initialize snake with random head and give it direction
     snake::position.x = 10;
     snake::position.y = 10;
-    snake::setDirection(snake::TurnDirection::Right);
+    snake::turnDirection(snake::TurnDirection::Right);
     game::initGrid();
     
     snake::grow();
@@ -194,7 +171,7 @@ void start() {
     
     
     //set initial snake speed to 1 second
-    snake::timeToMove = 800;
+    snake::timeToMove = 600;
     
     
 }

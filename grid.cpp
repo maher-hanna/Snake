@@ -7,11 +7,11 @@ std::vector<int> possibleTarget;
 int stateGrid[grid::height][grid::width] = {};
 //---------------------
 
-void setTile(const SDL_Point &cell, bool filled) {
+void setTileState(const SDL_Point &cell, bool filled) {
     stateGrid[cell.y][cell.x] = int(filled);
     
 }
-bool getTile(const SDL_Point & cell) {
+bool getTileState(const SDL_Point & cell) {
     return bool(stateGrid[cell.y][cell.x]);
     
 }
@@ -24,6 +24,10 @@ void removeValidTarget(const SDL_Point &tile){
     }
     
 }
+void addValidTarget(const SDL_Point &tile){
+    possibleTarget.push_back(grid::toIndex(tile));
+}
+
 int toIndex(const SDL_Point &tile) {
     return tile.x + tile.y * width;
 }
@@ -33,7 +37,7 @@ SDL_Point toPoint(int index){
 void clear(){
     for(int y = 0; y < height;y++) {
         for(int x = 0 ; x < width; x++) {
-            setTile({x,y},false);
+            setTileState({x,y},false);
         }
     }
 }
