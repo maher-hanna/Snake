@@ -23,7 +23,7 @@ void draw();
 void clean();
 void drawPiece(SDL_Point tilePos,SDL_Color color);
 void drawTarget();
-void updateScore(int score);
+void increaseScore();
 //some utility functions---------
 SDL_Point screenCoordinate(SDL_Point tileCordinate);
 void initGrid();

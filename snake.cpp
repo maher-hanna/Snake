@@ -34,10 +34,12 @@ void grow() {
     grid::setTileState(position,true);
     position.x += direction.x;
     position.y += direction.y;
+    wrap();
     grid::removeValidTarget(position);
 }
 
 void update() {
+    
     auto size = tale.size();
     
     //update tale
@@ -45,7 +47,7 @@ void update() {
         //update grid block behind the tale
         grid::setTileState(tale[0],false);
         grid::addValidTarget(tale[0]);
-                
+        
         for(int i = 0 ; i < tale.size() - 1; i++) {
             tale[i] = tale[i + 1];
         }
@@ -57,12 +59,29 @@ void update() {
         
     }
     
-    
     //update head
     position.x += direction.x;
     position.y += direction.y;
     
     
+    wrap();
+    
+    
+    
+    
+}
+
+void wrap() {
+    //wrap the snake position to other side
+    if(snake::position.x < 0){
+        snake::position.x = grid::width - 1;
+    }
+    if(snake::position.y < 0){
+        snake::position.y = grid::height - 1;
+    }
+    
+    snake::position.x %= grid::width;
+    snake::position.y %= grid::height;
 }
 
 void turnDirection(TurnDirection dir) {
@@ -94,7 +113,7 @@ void turnDirection(TurnDirection dir) {
         break;
         
     }
-
+    
 }
 
 bool checkSelfCollision() {
@@ -104,5 +123,10 @@ bool checkSelfCollision() {
         return false;
     }
     
+}
+
+bool eatTarget(){
+    return (snake::position.x == game::target.x && 
+            snake::position.y == game::target.y);
 }
 }

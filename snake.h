@@ -35,7 +35,9 @@ void drawTale();
 void drawSnake();
 void grow();
 void update();
+void wrap();
 bool checkSelfCollision();
+bool eatTarget();
 //---------
 
 }

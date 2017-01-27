@@ -87,18 +87,25 @@ void handleInput () {
 }
 
 void logic() {
+    static bool needsToGrow = false;
     snake::turnDirection(snake::turn);
     
     
-    snake::update();
-    
-    if(snake::position.x == target.x && snake::position.y == target.y) {
-        score++;
-        updateScore(score);
+    if(needsToGrow){
         snake::grow();
+        increaseScore();
         snake::timeToMove -= 10;
+        
+        needsToGrow = !needsToGrow;
+    }else {
+        snake::update();
+        
+    }
+    if(snake::eatTarget()) {
+        needsToGrow = true;
         target = game::createTarget();
     }
+    
     
     if(snake::checkSelfCollision()) {
         game::running = false;
@@ -106,15 +113,7 @@ void logic() {
     }
     
     
-    //wrap the snake position to other side
-    if(snake::position.x < 0){
-        snake::position.x = grid::width - 1;
-    }
-    if(snake::position.y < 0){
-        snake::position.y = grid::height - 1;
-    }
-    snake::position.x %= grid::width;
-    snake::position.y %= grid::height;
+    
     
     
     
@@ -156,8 +155,8 @@ SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
 
 void start() {
     running = true;
-    score = 0;
-    
+    score = -1;
+    increaseScore();
     //initialize snake with random head and give it direction
     snake::position.x = 10;
     snake::position.y = 10;
@@ -225,9 +224,11 @@ void drawTarget() {
     
 }
 
-void updateScore(int score){
+void increaseScore(){
+    score++;
     std::string scoreToString;
     std::stringstream oss;
+    oss << "Score: ";
     oss << score;
     scoreToString = oss.str();
     SDL_SetWindowTitle(window,scoreToString.c_str());
