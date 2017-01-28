@@ -12,6 +12,8 @@ SDL_Window * window;
 SDL_Renderer * renderer;
 SDL_Point target;
 bool running;
+bool close;
+bool paused;
 int score;
 
 // -------------
@@ -49,7 +51,6 @@ void initSdl() {
 void setup() {
     srand(unsigned(time(nullptr)));
     initSdl();
-    start();    
 }
 
 void handleInput () {
@@ -57,7 +58,7 @@ void handleInput () {
     while(SDL_PollEvent(&event)) {
         switch (event.type) {
         case SDL_QUIT:
-            running = false;
+            close = true;
             
             break;
         case SDL_KEYDOWN:
@@ -79,6 +80,14 @@ void handleInput () {
                 
                 snake::turn = snake::TurnDirection::Left;
                 break;
+            case SDLK_SPACE:
+                if(game::paused){
+                    game::resume();
+                } else {
+                    game::pause();
+                }
+
+                break;
                 
             }
             
@@ -88,38 +97,43 @@ void handleInput () {
     
 }
 
-void logic() {
+void logic(bool &moveSnake) {
     static bool needsToGrow = false;
-    snake::turnDirection(snake::turn);
-    
-    
-    if(needsToGrow){
-        snake::grow();
-        score++;
-        SDL_SetWindowTitle(window,scoreAsString().c_str());
-        scoreAsString();
-        snake::speedup();
-        
-        needsToGrow = !needsToGrow;
-    }else {
-        snake::update();
-        
+    if(paused){
+        return;
     }
-    if(snake::eatTarget()) {
-        needsToGrow = true;
-        target = game::createTarget();
+    if(moveSnake){
+        snake::turnDirection(snake::turn);
+
+
+        if(needsToGrow){
+            snake::grow();
+            score++;
+
+            SDL_SetWindowTitle(window,getTitle().c_str());
+            scoreAsString();
+            snake::speedup();
+
+            needsToGrow = false;
+        }else {
+            snake::update();
+
+        }
+        if(snake::eatTarget()) {
+            needsToGrow = true;
+            target = game::createTarget();
+        }
+
+
+        if(snake::checkSelfCollision()) {
+            game::running = false;
+
+        }
+
+
+        moveSnake = false;
+
     }
-    
-    
-    if(snake::checkSelfCollision()) {
-        game::running = false;
-        
-    }
-    
-    
-    
-    
-    
     
 }
 
@@ -128,10 +142,10 @@ void draw() {
     SDL_SetRenderDrawColor(renderer,10,10,10,255);
     SDL_RenderClear(renderer);
     
-    
+
     snake::drawSnake();
     game::drawTarget();
-    
+
     SDL_RenderPresent(renderer);
     
 }
@@ -141,15 +155,30 @@ void clean() {
     grid::possibleTarget.clear();
     grid::clear();
     game::running = true;
+    game::close = false;
     
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+
     
 }
 
 
 
+void destroy(){
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+void pause(){
+    paused = true;
+    SDL_SetWindowTitle(window,"Paused");
+
+}
+
+void resume(){
+    paused = false;
+    SDL_SetWindowTitle(window,getTitle().c_str());
+}
 
 SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
     return SDL_Point{tileCoordinate.x * snake::pieceSize,
@@ -160,6 +189,8 @@ SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
 
 void start() {
     running = true;
+    close = false;
+    paused = false;
     score = 0;
     //initialize snake with random head and give it direction
     snake::position.x = 10;
@@ -182,10 +213,10 @@ void start() {
 
 //make every grid block that contains a snake piece eqauls 1 
 void initGrid() {
-    //add all cells to emptyTiles    
+    //add all cells to emptyTiles
     for(int y = 0 ; y < grid::height; y++) {
         for(int x = 0 ; x < grid::width;x++) {
-            grid::possibleTarget.push_back(grid::toIndex({x,y}));           
+            grid::possibleTarget.push_back(grid::toIndex({x,y}));
         }
         
     }
@@ -236,5 +267,13 @@ std::string scoreAsString(){
     return scoreToString;
     
 }
+
+std::string getTitle()
+{
+    std::string title = "Score ";
+    title += scoreAsString();
+    return title;
+}
+
 
 }
