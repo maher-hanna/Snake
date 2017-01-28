@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "snake.h"
 #include "grid.h"
 namespace game {
@@ -13,7 +14,6 @@ const int screenWidth = grid::width * snake::pieceSize;
 const int screenHeight = grid::height * snake::pieceSize;
 //----------------
 
-
 void initSdl();
 void start();
 void setup();
@@ -23,7 +23,7 @@ void draw();
 void clean();
 void drawPiece(SDL_Point tilePos,SDL_Color color);
 void drawTarget();
-void increaseScore();
+std::string scoreAsString();
 //some utility functions---------
 SDL_Point screenCoordinate(SDL_Point tileCordinate);
 void initGrid();

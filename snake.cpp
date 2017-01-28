@@ -129,4 +129,20 @@ bool eatTarget(){
     return (snake::position.x == game::target.x && 
             snake::position.y == game::target.y);
 }
+
+void speedup()
+{
+    if(game::score <= 10) {
+        snake::timeToMove -= 20;
+    }
+    else if(game::score <= 30){
+        snake::timeToMove -= 10;
+    }
+    else if(game::score <= 50){
+        snake::timeToMove -= 5;
+    } else {
+        snake::timeToMove -= 1;
+    }
+}
+
 }

@@ -34,6 +34,7 @@ void initSdl() {
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
+    SDL_SetWindowTitle(window,"Snake");
     
     renderer = SDL_CreateRenderer(window,-1,0);
     if(!window)
@@ -94,8 +95,10 @@ void logic() {
     
     if(needsToGrow){
         snake::grow();
-        increaseScore();
-        snake::timeToMove -= 30 - (score / 5);
+        score++;
+        SDL_SetWindowTitle(window,scoreAsString().c_str());
+        scoreAsString();
+        snake::speedup();
         
         needsToGrow = !needsToGrow;
     }else {
@@ -137,6 +140,7 @@ void clean() {
     snake::tale.clear();
     grid::possibleTarget.clear();
     grid::clear();
+    game::running = true;
     
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -156,8 +160,7 @@ SDL_Point screenCoordinate(SDL_Point tileCoordinate) {
 
 void start() {
     running = true;
-    score = -1;
-    increaseScore();
+    score = 0;
     //initialize snake with random head and give it direction
     snake::position.x = 10;
     snake::position.y = 10;
@@ -225,14 +228,12 @@ void drawTarget() {
     
 }
 
-void increaseScore(){
-    score++;
+std::string scoreAsString(){
     std::string scoreToString;
     std::stringstream oss;
-    oss << "Score: ";
     oss << score;
     scoreToString = oss.str();
-    SDL_SetWindowTitle(window,scoreToString.c_str());
+    return scoreToString;
     
 }
 

@@ -38,6 +38,7 @@ void update();
 void wrap();
 bool checkSelfCollision();
 bool eatTarget();
+void speedup();
 //---------
 
 }
