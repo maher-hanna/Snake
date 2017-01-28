@@ -74,8 +74,9 @@ void handleInput () {
                 snake::turn = snake::TurnDirection::Right;
                 break;
             case SDLK_LEFT:
-                snake::turn = snake::TurnDirection::Left;
             case SDLK_a:
+                
+                snake::turn = snake::TurnDirection::Left;
                 break;
                 
             }
@@ -94,7 +95,7 @@ void logic() {
     if(needsToGrow){
         snake::grow();
         increaseScore();
-        snake::timeToMove -= 10;
+        snake::timeToMove -= 30 - (score / 5);
         
         needsToGrow = !needsToGrow;
     }else {

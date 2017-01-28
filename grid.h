@@ -5,8 +5,8 @@
 
 namespace grid {
 //constants -------
-const int width = 32;
-const int height = 24;
+const int width = 28;
+const int height = 20;
 //------------
 
 //variable declerations -----------
