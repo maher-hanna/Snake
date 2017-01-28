@@ -15,6 +15,7 @@ bool running;
 bool close;
 bool paused;
 int score;
+Uint32 moveSnakeTimer;
 
 // -------------
 
@@ -177,6 +178,7 @@ void pause(){
 
 void resume(){
     paused = false;
+    game::moveSnakeTimer = 0;
     SDL_SetWindowTitle(window,getTitle().c_str());
 }
 

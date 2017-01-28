@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     game::setup();
     game::start();
 
-    Uint32 totalTime = 0;
+    game::moveSnakeTimer = 0;
     bool moveSnake = false;
 
     do {
@@ -29,15 +29,16 @@ int main(int argc, char *argv[])
 
         game::draw();
 
+
         gameHandlingTime = SDL_GetTicks() - loopStart;
         if(gameHandlingTime < game::frameTime) {
             SDL_Delay(game::frameTime - gameHandlingTime);
         }
         //total time = game handling time + delay
-        totalTime += SDL_GetTicks() - loopStart;
-        if(totalTime >= snake::timeToMove) {
+        game::moveSnakeTimer += SDL_GetTicks() - loopStart;
+        if(game::moveSnakeTimer >= snake::timeToMove) {
             moveSnake = true;
-            totalTime = 0;
+            game::moveSnakeTimer = 0;
         }
 
         //ask the user if he want to exit the game when

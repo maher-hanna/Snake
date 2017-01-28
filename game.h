@@ -49,6 +49,7 @@ extern bool running;
 extern bool close;
 extern bool paused;
 extern int score;
+extern Uint32 moveSnakeTimer;
 // -------------
 
 
