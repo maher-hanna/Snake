@@ -52,6 +52,11 @@ void initSdl() {
 void setup() {
     srand(unsigned(time(nullptr)));
     initSdl();
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"About",
+                             "This game is programmed by \n"
+                             "          Maher Hanna     \n"
+                             "from Syria,Hama,Maharda\n"
+                             "maher.hn802@gmail.com",window);
 }
 
 void handleInput () {
