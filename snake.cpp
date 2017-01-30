@@ -131,14 +131,14 @@ bool eatTarget(){
 }
 
 void speedup(){
-    if(snake::timeToMove >= 500){
-    snake::timeToMove -= 10;
-    }
-    else if(snake::timeToMove >= 400){
-        snake::timeToMove -= 5;
+    if(snake::timeToMove >= 400){
+    snake::timeToMove -= 20;
     }
     else if(snake::timeToMove >= 300 ){
-        snake::timeToMove -= 3;
+        snake::timeToMove -= 15;
+    }
+    else if(snake::timeToMove >= 200 ){
+        snake::timeToMove -= 2;
     }
     else if(snake::timeToMove >= 100){
         snake::timeToMove -= 1;
