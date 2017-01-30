@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
             moveSnake = true;
             game::moveSnakeTimer = 0;
         }
-
+        
         //ask the user if he want to exit the game when
         //hitting close button on the window
         if(game::close){

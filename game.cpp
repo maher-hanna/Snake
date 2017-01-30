@@ -92,7 +92,7 @@ void handleInput () {
                 } else {
                     game::pause();
                 }
-
+                
                 break;
                 
             }
@@ -110,35 +110,45 @@ void logic(bool &moveSnake) {
     }
     if(moveSnake){
         snake::turnDirection(snake::turn);
-
-
+        
+        
         if(needsToGrow){
             snake::grow();
             score++;
-
+            
             SDL_SetWindowTitle(window,getTitle().c_str());
             scoreAsString();
             snake::speedup();
-
+            
             needsToGrow = false;
         }else {
             snake::update();
-
+            
         }
         if(snake::eatTarget()) {
+            //check if player has won the game
+            if(snake::tale.size() == (grid::width * grid::height) - 2){
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Congratulation",
+                                         "You Win the game",window);
+                running = false;
+                destroy();
+                std::exit(EXIT_SUCCESS);
+            }
+            
+            
             needsToGrow = true;
             target = game::createTarget();
         }
-
-
+        
+        
         if(snake::checkSelfCollision()) {
             game::running = false;
-
+            
         }
-
-
+        
+        
         moveSnake = false;
-
+        
     }
     
 }
@@ -148,10 +158,10 @@ void draw() {
     SDL_SetRenderDrawColor(renderer,10,10,10,255);
     SDL_RenderClear(renderer);
     
-
+    
     snake::drawSnake();
     game::drawTarget();
-
+    
     SDL_RenderPresent(renderer);
     
 }
@@ -163,7 +173,7 @@ void clean() {
     game::running = true;
     game::close = false;
     
-
+    
     
 }
 
@@ -178,7 +188,7 @@ void destroy(){
 void pause(){
     paused = true;
     SDL_SetWindowTitle(window,"Paused");
-
+    
 }
 
 void resume(){
