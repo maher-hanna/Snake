@@ -54,7 +54,6 @@ void update() {
         tale.back().x = position.x;
         tale.back().y = position.y;
         grid::setTileState(tale.back(),true);
-        grid::removeValidTarget(tale.back());
         
         
     }
@@ -62,7 +61,8 @@ void update() {
     //update head
     position.x += direction.x;
     position.y += direction.y;
-    
+    grid::removeValidTarget(position);
+
     
     wrap();
     
